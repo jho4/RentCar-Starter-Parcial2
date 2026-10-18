@@ -70,7 +70,7 @@ public class RentalRequestBuilder {
             throw new IllegalArgumentException("Rental plan is required");
         }
         if (paymentToken == null || paymentToken.isBlank()) {
-            throw new IllegalArgumentException("Payment token is required");
+            throw new IllegalArgumentException("Payment method is required");
         }
 
         // If no extras were chosen, use the "no extras" service
