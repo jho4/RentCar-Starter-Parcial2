@@ -34,9 +34,8 @@
                     <Label text="Rental plan:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                     <ComboBox fx:id="planComboBox" prefWidth="270" onAction="#refreshPreview" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
-                    <Label text="Payment token:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                    <ComboBox fx:id="paymentTokenComboBox" prefWidth="270" onAction="#refreshPreview" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                </GridPane>
+                    <Label text="Payment method:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                    <ComboBox fx:id="paymentMethodComboBox" prefWidth="270" onAction="#refreshPreview" GridPane.columnIndex="1" GridPane.rowIndex="5"/>                </GridPane>
 
                 <Label fx:id="planDetailsLabel" wrapText="true" style="-fx-text-fill: #475569;"/>
                 <Label fx:id="availabilityLabel" wrapText="true"/>

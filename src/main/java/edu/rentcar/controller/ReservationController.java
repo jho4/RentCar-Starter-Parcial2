@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Function;
+import edu.rentcar.payment.PaymentMethod;
 
 /**
  * Controller of the reservation screen. It only reads the controls and shows results:
@@ -49,7 +50,7 @@ public class ReservationController {
     @FXML private CheckBox childSeatCheckBox;
     @FXML private CheckBox extraDriverCheckBox;
     @FXML private CheckBox bundleCheckBox;
-    @FXML private ComboBox<String> paymentTokenComboBox;
+    @FXML private ComboBox<PaymentMethod> paymentMethodComboBox;
     @FXML private Label planDetailsLabel;
     @FXML private Label availabilityLabel;
     @FXML private Label summaryLabel;
@@ -77,8 +78,16 @@ public class ReservationController {
         }
         statusFilterComboBox.setValue(ALL_STATUSES);
 
-        paymentTokenComboBox.getItems().setAll("tok_approved", "tok_declined", "tok_api_error");
-        paymentTokenComboBox.setValue("tok_approved");
+        paymentMethodComboBox.getItems().setAll(PaymentMethod.values());
+        paymentMethodComboBox.setConverter(new StringConverter<>() {
+            @Override public String toString(PaymentMethod method) {
+                return method == null ? "" : method.getLabel();
+            }
+            @Override public PaymentMethod fromString(String text) {
+                return null;
+            }
+        });
+        paymentMethodComboBox.getSelectionModel().selectFirst();
 
         planComboBox.getItems().setAll(ApplicationServices.planCatalog().getAll());
         planComboBox.setConverter(new StringConverter<>() {
@@ -180,7 +189,7 @@ public class ReservationController {
         childSeatCheckBox.setSelected(false);
         extraDriverCheckBox.setSelected(false);
         bundleCheckBox.setSelected(false);
-        paymentTokenComboBox.setValue("tok_approved");
+        paymentMethodComboBox.getSelectionModel().selectFirst();
         planComboBox.getSelectionModel().selectFirst();
         messageLabel.setText("");
         refreshPreview();
@@ -199,7 +208,7 @@ public class ReservationController {
                 .dates(startDatePicker.getValue(), endDatePicker.getValue())
                 .plan(factory == null ? null : factory.createPlan())
                 .services(ExtrasAssembler.assemble(selectedExtras()))
-                .paymentToken(paymentTokenComboBox.getValue())
+                .paymentToken(paymentMethodComboBox.getValue() == null ? null : paymentMethodComboBox.getValue().getToken())
                 .build();
     }
 
