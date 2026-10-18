@@ -1,46 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListCell?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.rentcar.controller.ReservationController" spacing="14" style="-fx-padding: 20;">
-    <Label text="Rental Reservation Management" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-
-    <HBox spacing="20">
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.rentcar.controller.ReservationController" spacing="14">
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
         <!-- Form Section -->
-        <VBox spacing="12" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 8;" prefWidth="420">
-            <Label text="Create a new rental reservation" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+        <ScrollPane fitToWidth="true" prefWidth="460" minWidth="460" style="-fx-background-color: transparent;">
+            <VBox spacing="12" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 8;">
+                <Label text="New rental reservation" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
 
-            <GridPane hgap="12" vgap="12">
-                <Label text="Customer:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <ComboBox fx:id="customerComboBox" prefWidth="240" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <GridPane hgap="12" vgap="10">
+                    <Label text="Customer:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <ComboBox fx:id="customerComboBox" prefWidth="270" onAction="#refreshPreview" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-                <Label text="Vehicle:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                <ComboBox fx:id="vehicleComboBox" prefWidth="240" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <Label text="Vehicle:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <ComboBox fx:id="vehicleComboBox" prefWidth="270" onAction="#refreshPreview" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-                <Label text="Start Date:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <DatePicker fx:id="startDatePicker" prefWidth="240" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    <Label text="Start date:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                    <DatePicker fx:id="startDatePicker" prefWidth="270" onAction="#refreshPreview" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-                <Label text="End Date:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                <DatePicker fx:id="endDatePicker" prefWidth="240" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-            </GridPane>
+                    <Label text="End date:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                    <DatePicker fx:id="endDatePicker" prefWidth="270" onAction="#refreshPreview" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-            <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
-                <Button text="Process Reservation" onAction="#processReservation" style="-fx-background-color: #2457a7; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            </HBox>
-        </VBox>
+                    <Label text="Rental plan:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                    <ComboBox fx:id="planComboBox" prefWidth="270" onAction="#refreshPreview" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+                    <Label text="Payment token:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                    <ComboBox fx:id="paymentTokenComboBox" prefWidth="270" onAction="#refreshPreview" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                </GridPane>
+
+                <Label fx:id="planDetailsLabel" wrapText="true" style="-fx-text-fill: #475569;"/>
+                <Label fx:id="availabilityLabel" wrapText="true"/>
+
+                <Label text="Extra services" style="-fx-font-weight: bold;"/>
+                <CheckBox fx:id="gpsCheckBox" text="GPS (5/day)" onAction="#refreshPreview"/>
+                <CheckBox fx:id="childSeatCheckBox" text="Child seat (7/day)" onAction="#refreshPreview"/>
+                <CheckBox fx:id="extraDriverCheckBox" text="Extra driver (30 fixed)" onAction="#refreshPreview"/>
+                <CheckBox fx:id="bundleCheckBox" text="Road Trip Bundle (10% off, includes Family Pack)" onAction="#refreshPreview"/>
+
+                <Label fx:id="summaryLabel" wrapText="true"
+                       style="-fx-background-color: #eef2f7; -fx-padding: 10; -fx-background-radius: 6; -fx-font-weight: bold;"/>
+                <Label fx:id="messageLabel" wrapText="true"/>
+
+                <HBox spacing="10">
+                    <Button text="Process Reservation" onAction="#processReservation"
+                            style="-fx-background-color: #2457a7; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Button text="Clear" onAction="#clearForm" style="-fx-background-color: #64748b; -fx-text-fill: white;"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
 
         <!-- Reservation History Section -->
         <VBox spacing="12" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 8;" HBox.hgrow="ALWAYS">
             <Label text="Reservation History" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
-            <ListView fx:id="reservationListView" prefHeight="260"/>
-            <Button text="Refresh History" onAction="#refreshHistory" style="-fx-background-color: #64748b; -fx-text-fill: white;"/>
+            <HBox spacing="10">
+                <Label text="Status:"/>
+                <ComboBox fx:id="statusFilterComboBox" onAction="#loadReservationHistory"/>
+                <Button text="Refresh" onAction="#refreshHistory" style="-fx-background-color: #64748b; -fx-text-fill: white;"/>
+            </HBox>
+            <TableView fx:id="reservationTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="75"/>
+                    <TableColumn fx:id="customerColumn" text="Customer" prefWidth="110"/>
+                    <TableColumn fx:id="vehicleColumn" text="Vehicle" prefWidth="110"/>
+                    <TableColumn fx:id="datesColumn" text="Dates" prefWidth="170"/>
+                    <TableColumn fx:id="planColumn" text="Plan + extras" prefWidth="170"/>
+                    <TableColumn fx:id="totalColumn" text="Total" prefWidth="90"/>
+                    <TableColumn fx:id="statusColumn" text="Status" prefWidth="95"/>
+                    <TableColumn fx:id="detailsColumn" text="Details" prefWidth="260"/>
+                </columns>
+            </TableView>
         </VBox>
     </HBox>
 </VBox>

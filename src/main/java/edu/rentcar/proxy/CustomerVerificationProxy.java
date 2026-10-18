@@ -3,8 +3,8 @@ package edu.rentcar.proxy;
 import edu.rentcar.payment.*;
 
 /**
- * Proxy pattern (RF-006): Verifies if the customer is authorized using the CustomerVerifier[cite: 38]
- * before invoking the payment gateway[cite: 37]. If unauthorized, it blocks the transaction immediately.
+ * Proxy pattern (RF-006): Verifies if the customer is authorized using the CustomerVerifier
+ * before invoking the payment gateway If unauthorized, it blocks the transaction immediately.
  */
 public class CustomerVerificationProxy implements PaymentGateway {
     private final CustomerVerifier verifier;
