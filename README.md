@@ -2,8 +2,8 @@
 
 ## 1. Integrantes
 
-- [Miguel ángel bocanegra] — [1095179036]
-- [jhoan esteban aviles] — [1094953060]
+**Miguel Ángel Bocanegra** — <u>1095179036</u>
+**Jhoan Esteban Avilés Sánchez** — <u>1094953060</u>
 
 ## 2. Descripción de la solución
 
