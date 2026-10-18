@@ -7,8 +7,8 @@ import com.rentcar.paymentclient.PaymentApiResponse;
 import java.io.IOException;
 
 /**
- * Adapter pattern (RF-004): Adapts the external payment client provided by the instructor[cite: 42]
- * to the internal PaymentGateway interface of the application[cite: 37].
+ * Adapter pattern (RF-004): Adapts the external payment client provided by the instructor
+ * to the internal PaymentGateway interface of the application
  */
 public class PaymentApiAdapter implements PaymentGateway {
     private final PaymentApiClient apiClient;
@@ -39,9 +39,11 @@ public class PaymentApiAdapter implements PaymentGateway {
             } else {
                 return PaymentResult.technicalError("Payment API returned status: " + response.httpStatus());
             }
-        } catch (IOException | InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return PaymentResult.technicalError("Payment API communication error: " + e.getMessage());
-        }
+        }  catch (IOException e) {
+        return PaymentResult.technicalError("Payment API communication error: " + e.getMessage());
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return PaymentResult.technicalError("Payment API call was interrupted.");
+    }
     }
 }

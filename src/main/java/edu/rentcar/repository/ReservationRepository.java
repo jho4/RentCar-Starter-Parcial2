@@ -29,7 +29,7 @@ public class ReservationRepository {
 
     public boolean isVehicleAvailable(String vehicleId, LocalDate start, LocalDate end) {
         for (Reservation r : reservations) {
-            // Only confirmed reservations block vehicle availability[cite: 29]
+            // Only confirmed reservations block vehicle availability
             if (r.isConfirmed() && r.getVehicleId().equals(vehicleId)) {
                 LocalDate rStart = r.getStartDate();
                 LocalDate rEnd = r.getEndDate();

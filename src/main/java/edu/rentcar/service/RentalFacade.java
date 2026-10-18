@@ -3,13 +3,20 @@ package edu.rentcar.service;
 import edu.rentcar.model.RentalRequest;
 import edu.rentcar.model.Reservation;
 import edu.rentcar.model.ReservationStatus;
-import edu.rentcar.payment.*;
+import edu.rentcar.model.Vehicle;
+import edu.rentcar.payment.PaymentGateway;
+import edu.rentcar.payment.PaymentRequest;
+import edu.rentcar.payment.PaymentResult;
+import edu.rentcar.payment.PaymentStatus;
 import edu.rentcar.repository.ReservationRepository;
 
+import java.time.LocalDate;
+import java.util.List;
+
 /**
- * Facade pattern (RF-002): Coordinates the complete rental workflow, including request validation[cite: 31],
- * vehicle availability check, total cost calculation (plans[cite: 33] and services[cite: 28]),
- * payment processing[cite: 37], and reservation registration[cite: 30].
+ * Facade pattern (RF-002): coordinates the complete rental workflow, including request validation,
+ * vehicle availability check, total cost calculation (plans and services),
+ * payment processing, and reservation registration.
  */
 public class RentalFacade {
     private final ReservationRepository reservationRepository;
@@ -18,6 +25,16 @@ public class RentalFacade {
     public RentalFacade(ReservationRepository reservationRepository, PaymentGateway paymentGateway) {
         this.reservationRepository = reservationRepository;
         this.paymentGateway = paymentGateway;
+    }
+
+    /** All reservations registered during this execution (confirmed, pending and failed). */
+    public List<Reservation> getReservations() {
+        return reservationRepository.findAll();
+    }
+
+    /** Availability of a vehicle for a period; only confirmed reservations block it. */
+    public boolean isVehicleAvailable(Vehicle vehicle, LocalDate start, LocalDate end) {
+        return reservationRepository.isVehicleAvailable(vehicle.getId(), start, end);
     }
 
     public Reservation processRental(RentalRequest request) {
@@ -39,7 +56,7 @@ public class RentalFacade {
                     "Vehicle is not available for the selected period.");
         }
 
-        // 3. Calculate total cost (Base plan + optional services per rental days)
+        // 3. Calculate total cost (base plan + optional services per rental days)
         long days = request.getRentalDays();
         double baseCost = request.getPlan().calculateBaseCost(request.getVehicle(), days);
         double servicesCost = request.getServices().getCost(days);
@@ -55,7 +72,7 @@ public class RentalFacade {
 
         PaymentResult paymentResult = paymentGateway.pay(paymentRequest);
 
-        // 5. Determine reservation status[cite: 29]
+        // 5. Determine reservation status
         ReservationStatus status;
         String reason;
 
@@ -70,7 +87,7 @@ public class RentalFacade {
             reason = "Payment declined: " + paymentResult.message();
         }
 
-        // 6. Save and return the resulting reservation[cite: 30]
+        // 6. Save and return the resulting reservation
         return reservationRepository.save(request, totalCost, status, reason);
     }
 }
